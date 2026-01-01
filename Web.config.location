@@ -1,0 +1,10 @@
+<!-- Add this section AFTER the closing </system.webServer> tag in Web.config -->
+
+  <!-- Allow anonymous access to Account/Login -->
+  <location path="Account/Login">
+    <system.web>
+      <authorization>
+        <allow users="*" />
+      </authorization>
+    </system.web>
+  </location>

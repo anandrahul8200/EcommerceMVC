@@ -1,0 +1,145 @@
+@model EcommerceMVC.Models.AnalyticsDashboardViewModel
+@{
+    ViewBag.Title = "Analytics Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Analytics Dashboard</h2>
+            <hr />
+        </div>
+    </div>
+
+    <!-- Sales Summary -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4>Today's Sales</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>$@Model.TodaySales.ToString("N2")</h3>
+                    <p>@Model.TodayOrders orders</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4>This Month</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>$@Model.ThisMonthSales.ToString("N2")</h3>
+                    <p>@Model.ThisMonthOrders orders</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4>Last Month</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>$@Model.LastMonthSales.ToString("N2")</h3>
+                    <p>Previous period</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Pending Orders</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>@Model.PendingOrders</h3>
+                    <p>Need attention</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer & Inventory Summary -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Total Customers</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>@Model.TotalCustomers</h3>
+                    <p>@Model.NewCustomersThisMonth new this month</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Products</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>@Model.TotalProducts</h3>
+                    <p>Active products</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h4>Low Stock</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>@Model.LowStockCount</h3>
+                    <p>@Model.OutOfStockCount out of stock</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Reviews</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>@Model.TotalReviews</h3>
+                    <p>@Model.PendingReviews pending approval</p>
+                    <p>Avg: @Model.AverageRating.ToString("N1") stars</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Detailed Reports</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="@Url.Action("Sales")" class="btn btn-primary btn-block">
+                                <i class="glyphicon glyphicon-stats"></i> Sales Analytics
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="@Url.Action("Inventory")" class="btn btn-warning btn-block">
+                                <i class="glyphicon glyphicon-list-alt"></i> Inventory Report
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="@Url.Action("Customers")" class="btn btn-info btn-block">
+                                <i class="glyphicon glyphicon-user"></i> Customer Analytics
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="@Url.Action("Reviews")" class="btn btn-success btn-block">
+                                <i class="glyphicon glyphicon-star"></i> Review Analytics
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

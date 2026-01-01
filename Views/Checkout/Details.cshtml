@@ -1,0 +1,227 @@
+@model EcommerceMVC.Models.CheckoutViewModel
+
+@{
+    ViewBag.Title = "Checkout Details";
+    var cart = ViewBag.Cart as EcommerceMVC.Models.ShoppingCart;
+    var isLoggedIn = Session["UserID"] != null;
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-credit-card"></i> Checkout Details</h2>
+    @if (isLoggedIn)
+    {
+        <p class="text-muted">Welcome back, @(Session["UserFullName"] ?? Session["Username"])!</p>
+    }
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Billing & Shipping Information</h5>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("Details", "Checkout", FormMethod.Post, new { id = "checkoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name *</label>
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name *</label>
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email *</label>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", required = "required" })
+                            @if (isLoggedIn)
+                            {
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i> 
+                                    Pre-filled with your account email. You can change it, but orders will be linked to the email you enter.
+                                </small>
+                            }
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone *</label>
+                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Street Address *</label>
+                            @Html.TextBoxFor(m => m.Street, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.Street, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">City *</label>
+                            @Html.TextBoxFor(m => m.City, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.City, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">State *</label>
+                            @Html.TextBoxFor(m => m.State, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.State, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">ZIP Code *</label>
+                            @Html.TextBoxFor(m => m.ZipCode, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.ZipCode, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Country *</label>
+                            @Html.TextBoxFor(m => m.Country, new { @class = "form-control", required = "required", value = "United States" })
+                            @Html.ValidationMessageFor(m => m.Country, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Order Notes (Optional)</label>
+                            @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", rows = "3", placeholder = "Special delivery instructions..." })
+                        </div>
+
+                        @if (!isLoggedIn)
+                        {
+                            <div class="col-12">
+                                <hr />
+                                <div class="form-check mb-3">
+                                    @Html.CheckBoxFor(m => m.CreateAccount, new { @class = "form-check-input", id = "createAccountCheck" })
+                                    <label class="form-check-label" for="createAccountCheck">
+                                        <strong>Create an account for faster future checkouts</strong>
+                                    </label>
+                                </div>
+                                <div id="accountFields" style="display: none;">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Password</label>
+                                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Choose a password" })
+                                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Confirm Password</label>
+                                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Confirm your password" })
+                                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger small" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <hr />
+
+                    <!-- Payment Section -->
+                    <div class="payment-section">
+                        <h5 class="mb-3"><i class="bi bi-credit-card"></i> Payment Information</h5>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-credit-card display-4 text-muted mb-3"></i>
+                                        <h6>💳 Payment Information</h6>
+                                        <p class="text-muted">Stripe Payment Simulation</p>
+                                        <div class="mb-3">
+                                            <label class="form-label">Stripe Token (for testing)</label>
+                                            @Html.TextBoxFor(m => m.StripeToken, new { @class = "form-control", placeholder = "Leave empty for success, or try: tok_chargedeclined", value = "" })
+                                            <small class="text-muted">
+                                                Test values: <code>tok_chargedeclined</code> (declined), <code>tok_insufficientfunds</code> (insufficient funds)
+                                            </small>
+                                        </div>
+                                        <p class="text-success">🔒 Your payment information is encrypted and secure</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-lock"></i> Complete Order - $@cart.GetTotal().ToString("N2")
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Order Summary</h5>
+            </div>
+            <div class="card-body">
+                @if (cart != null && cart.Items.Any())
+                {
+                    foreach (var item in cart.Items)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong>@item.ProductName</strong>
+                                <br />
+                                <small class="text-muted">Qty: @item.Quantity × $@item.Price.ToString("N2")</small>
+                            </div>
+                            <div class="text-end">
+                                <strong>$@item.Subtotal.ToString("N2")</strong>
+                            </div>
+                        </div>
+                    }
+                    <hr />
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>$@cart.GetTotal().ToString("N2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax (8.5%):</span>
+                        <span>$@((cart.GetTotal() * 0.085m).ToString("N2"))</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>@(cart.GetTotal() >= 100 ? "FREE" : "$9.99")</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <strong>Total: </strong>
+                        <strong class="text-success">$@((cart.GetTotal() + (cart.GetTotal() * 0.085m) + (cart.GetTotal() >= 100 ? 0 : 9.99m)).ToString("N2"))</strong>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">Your cart is empty</p>
+                }
+            </div>
+        </div>
+
+        @if (isLoggedIn)
+        {
+            <div class="card mt-3">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-check text-success display-6"></i>
+                    <h6 class="mt-2">Logged in as</h6>
+                    <p class="text-muted mb-0">@(Session["UserFullName"] ?? Session["Username"])</p>
+                    <small class="text-muted">Orders will be linked to your account</small>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Show/hide account creation fields
+        $('#createAccountCheck').change(function() {
+            if ($(this).is(':checked')) {
+                $('#accountFields').slideDown();
+                $('#Password, #ConfirmPassword').attr('required', true);
+            } else {
+                $('#accountFields').slideUp();
+                $('#Password, #ConfirmPassword').removeAttr('required');
+            }
+        });
+    });
+</script>
+      

@@ -1,0 +1,222 @@
+@model EcommerceMVC.Models.ReviewAnalyticsViewModel
+@{
+    ViewBag.Title = "Review Analytics";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Review Analytics</h2>
+            <p><a href="@Url.Action("Index")" class="btn btn-default">← Back to Dashboard</a></p>
+            <hr />
+        </div>
+    </div>
+
+    <!-- Rating Distribution -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4>Rating Distribution</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.RatingDistribution.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Rating</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var totalReviews = Model.RatingDistribution.Sum(r => r.Count);
+                                }
+                                @foreach (var rating in Model.RatingDistribution.OrderByDescending(r => r.Rating))
+                                {
+                                    <tr>
+                                        <td>
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <span class="glyphicon glyphicon-star @(i <= rating.Rating ? "text-warning" : "text-muted")"></span>
+                                            }
+                                            (@rating.Rating)
+                                        </td>
+                                        <td>@rating.Count</td>
+                                        <td>@((rating.Count * 100.0 / totalReviews).ToString("N1"))%</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No review data available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4>Top Rated Products</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.TopRatedProducts.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Rating</th>
+                                    <th>Reviews</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model.TopRatedProducts)
+                                {
+                                    <tr>
+                                        <td>@product.ProductName</td>
+                                        <td>
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <span class="glyphicon glyphicon-star @(i <= Math.Round((double)(product.AverageRating ?? 0)) ? "text-warning" : "text-muted")"></span>
+                                            }
+                                            (@((product.AverageRating ?? 0).ToString("N1")))
+                                        </td>
+                                        <td>@product.ReviewCount</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No rated products available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Reviews -->
+    @if (Model.PendingReviews.Any())
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        <h4>Pending Reviews (@Model.PendingReviews.Count)</h4>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Customer</th>
+                                    <th>Rating</th>
+                                    <th>Review</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var review in Model.PendingReviews)
+                                {
+                                    <tr>
+                                        <td>@review.Product.ProductName</td>
+                                        <td>@review.Customer.FullName</td>
+                                        <td>
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <span class="glyphicon glyphicon-star @(i <= review.Rating ? "text-warning" : "text-muted")"></span>
+                                            }
+                                        </td>
+                                        <td>@(review.ReviewText.Length > 50 ? review.ReviewText.Substring(0, 50) + "..." : review.ReviewText)</td>
+                                        <td>@review.CreatedDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <button class="btn btn-success btn-xs" onclick="approveReview(@review.ReviewID)">Approve</button>
+                                            <button class="btn btn-danger btn-xs" onclick="rejectReview(@review.ReviewID)">Reject</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Recent Reviews -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Recent Reviews</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.RecentReviews.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Customer</th>
+                                    <th>Rating</th>
+                                    <th>Review</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var review in Model.RecentReviews)
+                                {
+                                    <tr>
+                                        <td>@review.Product.ProductName</td>
+                                        <td>@review.Customer.FullName</td>
+                                        <td>
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <span class="glyphicon glyphicon-star @(i <= review.Rating ? "text-warning" : "text-muted")"></span>
+                                            }
+                                        </td>
+                                        <td>@(review.ReviewText.Length > 50 ? review.ReviewText.Substring(0, 50) + "..." : review.ReviewText)</td>
+                                        <td>@review.CreatedDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <span class="label @(review.IsApproved ? "label-success" : "label-warning")">
+                                                @(review.IsApproved ? "Approved" : "Pending")
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No recent reviews available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function approveReview(reviewId) {
+    if (confirm('Are you sure you want to approve this review?')) {
+        // Implementation would go here - could use AJAX to call a controller action
+        alert('Review approval functionality would be implemented here');
+    }
+}
+
+function rejectReview(reviewId) {
+    if (confirm('Are you sure you want to reject this review?')) {
+        // Implementation would go here - could use AJAX to call a controller action
+        alert('Review rejection functionality would be implemented here');
+    }
+}
+</script>

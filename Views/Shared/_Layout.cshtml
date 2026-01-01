@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - E-commerce Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #06b6d4;
+        }
+        
+        body { 
+            padding-top: 70px; 
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand { 
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .navbar-brand i {
+            margin-right: 8px;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .table thead th {
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 15px;
+        }
+        
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f1f5f9;
+            transform: scale(1.01);
+        }
+        
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-info {
+            background-color: var(--info-color);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 0.875rem;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .page-header h2 {
+            color: #1e293b;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats-card {
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-card.primary { border-left-color: var(--primary-color); }
+        .stats-card.success { border-left-color: var(--success-color); }
+        .stats-card.info { border-left-color: var(--info-color); }
+        .stats-card.warning { border-left-color: var(--warning-color); }
+        
+        .footer { 
+            margin-top: 60px; 
+            padding: 30px 0; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .footer p {
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .jumbotron {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .jumbotron hr {
+            border-color: rgba(255,255,255,0.3);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shop"></i>E-commerce System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Shop")">
+                            <i class="bi bi-shop-window"></i> Shop
+                        </a>
+                    </li>
+                    @if (Session["UserRole"] != null && (Session["UserRole"].ToString() == "Admin" || Session["UserRole"].ToString() == "Manager"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Customers")">
+                                <i class="bi bi-people"></i> Customers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Products")">
+                                <i class="bi bi-box-seam"></i> Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Orders")">
+                                <i class="bi bi-cart-check"></i> All Orders
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-graph-up"></i> Analytics
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "Analytics")"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Sales", "Analytics")"><i class="bi bi-currency-dollar"></i> Sales</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Inventory", "Analytics")"><i class="bi bi-boxes"></i> Inventory</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Customers", "Analytics")"><i class="bi bi-people"></i> Customers</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Reviews", "Analytics")"><i class="bi bi-star"></i> Reviews</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "Reports")"><i class="bi bi-file-earmark-text"></i> Legacy Reports</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Manage", "Reviews")">
+                                <i class="bi bi-star-half"></i> Reviews
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Orders")">
+                                <i class="bi bi-receipt"></i> My Orders
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="@Url.Action("Index", "Cart")">
+                            <i class="bi bi-cart3"></i> Cart
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">
+                                0
+                            </span>
+                        </a>
+                    </li>
+                    @if (Session["UserID"] != null)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> @(Session["UserFullName"] ?? Session["Username"])
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Logout", "Account")"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Login", "Account")">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Register", "Account")">
+                                <i class="bi bi-person-plus"></i> Register
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        @RenderBody()
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p><i class="bi bi-code-slash"></i> @DateTime.Now.Year - E-commerce Management System (.NET Framework 4.8)</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Update cart counter on page load
+        $(document).ready(function() {
+            updateCartCounter();
+        });
+
+        // Function to update cart counter
+        function updateCartCounter() {
+            $.get('@Url.Action("GetCartCount", "Cart")', function(data) {
+                if (data && typeof data.count !== 'undefined') {
+                    $('#cartCount').text(data.count);
+                } else {
+                    console.log('Invalid cart count response:', data);
+                }
+            }).fail(function(xhr, status, error) {
+                console.log('GetCartCount failed:', status, error);
+                // If GetCartCount fails, try the alternative Count action
+                $.get('@Url.Action("Count", "Cart")', function(data) {
+                    if (data && typeof data.count !== 'undefined') {
+                        $('#cartCount').text(data.count);
+                    } else {
+                        console.log('Invalid cart count response from Count:', data);
+                    }
+                }).fail(function(xhr2, status2, error2) {
+                    console.log('Both cart count endpoints failed:', status2, error2);
+                    // Set to 0 as fallback
+                    $('#cartCount').text('0');
+                });
+            });
+        }
+
+        // Update counter when items are added to cart (AJAX version)
+        $(document).on('submit', 'form[action*="Cart/Add"]', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            
+            // Add AJAX header to request
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                }
+            });
+            
+            $.post(form.attr('action'), form.serialize(), function(data) {
+                if (data && data.success) {
+                    updateCartCounter();
+                    // Show success message with Bootstrap toast or alert
+                    showSuccessMessage(data.message);
+                } else {
+                    // If AJAX response doesn't have expected format, just update counter
+                    updateCartCounter();
+                    showSuccessMessage('Item added to cart!');
+                }
+            }).fail(function() {
+                // If AJAX fails, submit form normally
+                form.off('submit').submit();
+            });
+        });
+
+        // Function to show success message
+        function showSuccessMessage(message) {
+            // Create a temporary alert
+            var alertHtml = '<div class="alert alert-success alert-dismissible fade show position-fixed" style="top: 80px; right: 20px; z-index: 9999; min-width: 300px;">' +
+                '<i class="bi bi-check-circle"></i> ' + message +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                '</div>';
+            
+            $('body').append(alertHtml);
+            
+            // Auto-dismiss after 3 seconds
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 3000);
+        }
+
+        // Also update cart counter when page loads after a redirect (for non-AJAX submissions)
+        $(window).on('focus', function() {
+            updateCartCounter();
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

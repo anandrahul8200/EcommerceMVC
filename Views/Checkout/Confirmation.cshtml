@@ -1,0 +1,94 @@
+@model EcommerceMVC.Models.Order
+
+@{
+    ViewBag.Title = "Order Confirmation";
+}
+
+<div class="text-center py-5">
+    <div class="mb-4">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 6rem;"></i>
+    </div>
+    <h1 class="mb-3">Order Confirmed!</h1>
+    <p class="lead text-muted">Thank you for your purchase</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-receipt"></i> Order Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Order Number</h6>
+                        <h4>@Model.OrderNumber</h4>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <h6 class="text-muted">Order Date</h6>
+                        <h5>@Model.OrderDate.ToString("MMMM dd, yyyy")</h5>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">Customer Information</h6>
+                        <p class="mb-1"><strong>@Model.Customer.FullName</strong></p>
+                        <p class="mb-1">@Model.Customer.Email</p>
+                        <p class="mb-0">@Model.Customer.Phone</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">Order Status</h6>
+                        <p class="mb-1">
+                            <span class="badge bg-warning">@Model.OrderStatus</span>
+                        </p>
+                        <p class="mb-1">
+                            <span class="badge bg-success">@Model.PaymentStatus</span>
+                        </p>
+                    </div>
+                </div>
+
+                <hr />
+
+                <h6 class="text-muted mb-3">Order Summary</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td>Subtotal</td>
+                                <td class="text-end"><strong>$@Model.SubTotal.ToString("N2")</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Tax</td>
+                                <td class="text-end"><strong>$@Model.TaxAmount.ToString("N2")</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Shipping</td>
+                                <td class="text-end"><strong>$@Model.ShippingAmount.ToString("N2")</strong></td>
+                            </tr>
+                            <tr class="table-success">
+                                <td><strong>Total</strong></td>
+                                <td class="text-end"><h4 class="mb-0">$@Model.TotalAmount.ToString("N2")</h4></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-info mt-4">
+                    <i class="bi bi-envelope"></i> A confirmation email has been sent to <strong>@Model.Customer.Email</strong>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="@Url.Action("Index", "Shop")" class="btn btn-primary">
+                        <i class="bi bi-shop"></i> Continue Shopping
+                    </a>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
+                        <i class="bi bi-house"></i> Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

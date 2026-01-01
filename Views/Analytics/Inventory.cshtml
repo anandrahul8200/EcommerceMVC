@@ -1,0 +1,180 @@
+@model EcommerceMVC.Models.InventoryAnalyticsViewModel
+@{
+    ViewBag.Title = "Inventory Analytics";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Inventory Analytics</h2>
+            <p><a href="@Url.Action("Index")" class="btn btn-default">← Back to Dashboard</a></p>
+            <hr />
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h4>Low Stock Products</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>@Model.LowStockProducts.Count</h3>
+                    <p>Products below minimum level</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Out of Stock</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>@Model.OutOfStockProducts.Count</h3>
+                    <p>Products with zero stock</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4>Inventory Value</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>$@Model.InventoryValue.ToString("N2")</h3>
+                    <p>Total inventory worth</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Products -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h4>Low Stock Alert</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.LowStockProducts.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Current Stock</th>
+                                    <th>Min Level</th>
+                                    <th>Reorder Point</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model.LowStockProducts)
+                                {
+                                    <tr class="@(product.StockQuantity <= 0 ? "danger" : "warning")">
+                                        <td>@product.ProductName</td>
+                                        <td>@product.StockQuantity</td>
+                                        <td>@product.MinStockLevel</td>
+                                        <td>@product.ReorderPoint</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-success">All products are adequately stocked!</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4>Stock Alerts</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.StockAlerts.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Alert Type</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var alert in Model.StockAlerts.Take(10))
+                                {
+                                    <tr>
+                                        <td>@alert.Product.ProductName</td>
+                                        <td>
+                                            <span class="label @(alert.AlertType == "OutOfStock" ? "label-danger" : "label-warning")">
+                                                @alert.AlertType
+                                            </span>
+                                        </td>
+                                        <td>@alert.CreatedDate.ToString("MMM dd, yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No active stock alerts.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Inventory Transactions -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Recent Inventory Transactions</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.RecentTransactions.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Product</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Reason</th>
+                                    <th>User</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var transaction in Model.RecentTransactions.Take(20))
+                                {
+                                    <tr>
+                                        <td>@transaction.CreatedDate.ToString("MMM dd, HH:mm")</td>
+                                        <td>@transaction.Product.ProductName</td>
+                                        <td>
+                                            <span class="label @(transaction.TransactionType == "Sale" ? "label-danger" : transaction.TransactionType == "Purchase" ? "label-success" : "label-info")">
+                                                @transaction.TransactionType
+                                            </span>
+                                        </td>
+                                        <td>@transaction.Quantity</td>
+                                        <td>@transaction.Reason</td>
+                                        <td>@transaction.CreatedBy</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No recent inventory transactions.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
