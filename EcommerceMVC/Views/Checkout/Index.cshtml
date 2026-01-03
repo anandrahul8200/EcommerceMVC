@@ -1,0 +1,130 @@
+@using Microsoft.AspNetCore.Http
+@model EcommerceMVC.Models.CheckoutViewModel
+
+@{
+    ViewBag.Title = "Checkout";
+    var cart = ViewBag.Cart as EcommerceMVC.Models.ShoppingCart;
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-credit-card"></i> Checkout</h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Billing & Shipping Information</h5>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("Index", "Checkout", FormMethod.Post, new { id = "checkoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name *</label>
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name *</label>
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email *</label>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", required = "required" })
+                            @if (Context.Session.GetInt32("UserID") != null)
+                            {
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i>
+                                    Pre-filled with your account email. You can change it, but orders will be linked to the email you enter.
+                                </small>
+                            }
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone *</label>
+                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Street Address *</label>
+                            @Html.TextBoxFor(m => m.Street, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.Street, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">City *</label>
+                            @Html.TextBoxFor(m => m.City, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.City, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">State *</label>
+                            @Html.TextBoxFor(m => m.State, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.State, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Zip Code *</label>
+                            @Html.TextBoxFor(m => m.ZipCode, new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.ZipCode, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Order Notes (Optional)</label>
+                            @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", rows = 3 })
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <h5 class="mb-3">Payment Information</h5>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> <strong>Demo Mode:</strong> This is a simulated payment. In production, Stripe.js would be integrated here for secure payment processing.
+                    </div>
+
+                    @Html.HiddenFor(m => m.StripeToken, new { id = "stripeToken" })
+
+                    <button type="submit" class="btn btn-success btn-lg w-100 mt-3">
+                        <i class="bi bi-lock"></i> Place Order
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Order Summary</h5>
+            </div>
+            <div class="card-body">
+                @foreach (var item in cart.Items)
+                {
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>@item.ProductName x @item.Quantity</span>
+                        <strong>$@item.Subtotal.ToString("N2")</strong>
+                    </div>
+                }
+                <hr />
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <strong>$@cart.GetTotal().ToString("N2")</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tax (8.5%):</span>
+                    <strong>$@((cart.GetTotal() * 0.085m).ToString("N2"))</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping:</span>
+                    <strong>@(cart.GetTotal() >= 100 ? "FREE" : "$9.99")</strong>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-between">
+                    <strong>Total:</strong>
+                    <h4 class="text-success mb-0">$@((cart.GetTotal() + (cart.GetTotal() * 0.085m) + (cart.GetTotal() >= 100 ? 0 : 9.99m)).ToString("N2"))</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,128 @@
+@model IEnumerable<EcommerceMVC.Models.Product>
+
+@{
+    ViewBag.Title = "Products";
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-box-seam-fill"></i> Products</h2>
+</div>
+
+<div class="mb-4">
+    <a href="@Url.Action("Create")" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create New Product
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>#@item.ProductID</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.ProductName" class="product-thumbnail me-3" />
+                                    }
+                                    else
+                                    {
+                                        <div class="product-icon me-2">
+                                            <i class="bi bi-box"></i>
+                                        </div>
+                                    }
+                                    <div>
+                                        <strong>@item.ProductName</strong>
+                                        @if (item.IsFeatured)
+                                        {
+                                            <span class="badge bg-warning ms-2"><i class="bi bi-star-fill"></i> Featured</span>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <code>@item.SKU</code>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi bi-tag"></i> @item.Category.CategoryName
+                                </span>
+                            </td>
+                            <td>
+                                <strong class="text-success">$@item.Price.ToString("N2")</strong>
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons justify-content-center">
+                                    <a href="@Url.Action("Details", new { id = item.ProductID })" class="btn btn-sm btn-info" title="Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", new { id = item.ProductID })" class="btn btn-sm btn-warning" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.ProductID })" class="btn btn-sm btn-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-thumbnail {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+    }
+    
+    .product-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+    
+    code {
+        background-color: #f1f5f9;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        color: #475569;
+    }
+</style>

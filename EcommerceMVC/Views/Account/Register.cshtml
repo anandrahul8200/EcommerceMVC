@@ -1,0 +1,102 @@
+@model EcommerceMVC.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Create Account";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3><i class="bi bi-person-plus"></i> Create Your Account</h3>
+                    <p class="mb-0">Join our store for a better shopping experience</p>
+                </div>
+                <div class="card-body p-4">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger">
+                            @ViewBag.ErrorMessage
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">@Html.DisplayNameFor(m => m.FirstName) *</label>
+                                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "Enter your first name", required = "required" })
+                                @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger small" })
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">@Html.DisplayNameFor(m => m.LastName) *</label>
+                                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Enter your last name", required = "required" })
+                                @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">@Html.DisplayNameFor(m => m.Email) *</label>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Enter your email address", type = "email", required = "required" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">@Html.DisplayNameFor(m => m.Phone)</label>
+                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", placeholder = "Enter your phone number (optional)", type = "tel" })
+                            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">@Html.DisplayNameFor(m => m.Password) *</label>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Create a password (min 6 characters)", required = "required" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">@Html.DisplayNameFor(m => m.ConfirmPassword) *</label>
+                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Confirm your password", required = "required" })
+                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-person-check"></i> Create Account
+                            </button>
+                        </div>
+                    }
+
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="mb-0">Already have an account?</p>
+                        <a href="@Url.Action("Login", "Account")" class="btn btn-outline-secondary">
+                            <i class="bi bi-box-arrow-in-right"></i> Sign In
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Bootstrap form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

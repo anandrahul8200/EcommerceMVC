@@ -1,0 +1,114 @@
+@model IEnumerable<EcommerceMVC.Models.Customer>
+
+@{
+    ViewBag.Title = "Customers";
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-people-fill"></i> Customers</h2>
+</div>
+
+<div class="mb-4">
+    <a href="@Url.Action("Create")" class="btn btn-primary">
+        <i class="bi bi-person-plus"></i> Create New Customer
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Type</th>
+                        <th>Loyalty Points</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>#@item.CustomerID</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <div>
+                                        <strong>@item.FullName</strong>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <i class="bi bi-envelope text-muted"></i> @item.Email
+                            </td>
+                            <td>
+                                <i class="bi bi-telephone text-muted"></i> @(item.Phone ?? "N/A")
+                            </td>
+                            <td>
+                                @if (item.CustomerType == "VIP")
+                                {
+                                    <span class="badge bg-warning"><i class="bi bi-star-fill"></i> VIP</span>
+                                }
+                                else if (item.CustomerType == "Premium")
+                                {
+                                    <span class="badge bg-info"><i class="bi bi-gem"></i> Premium</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Regular</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">@item.LoyaltyPoints pts</span>
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons justify-content-center">
+                                    <a href="@Url.Action("Details", new { id = item.CustomerID })" class="btn btn-sm btn-info" title="Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", new { id = item.CustomerID })" class="btn btn-sm btn-warning" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.CustomerID })" class="btn btn-sm btn-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+</style>

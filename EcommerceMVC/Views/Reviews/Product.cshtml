@@ -1,0 +1,195 @@
+@using Microsoft.AspNetCore.Http
+@model List<EcommerceMVC.Models.ProductReview>
+
+@{
+    ViewBag.Title = "Product Reviews";
+    var product = ViewBag.Product as EcommerceMVC.Models.Product;
+    var canReview = (bool)ViewBag.CanReview;
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-star"></i> Reviews for @product.ProductName</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">@Html.ActionLink("Products", "Index", "Products")</li>
+            <li class="breadcrumb-item">@Html.ActionLink(product.ProductName, "Details", "Products", new { id = product.ProductID }, null)</li>
+            <li class="breadcrumb-item active">Reviews</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Review Summary -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4 text-center">
+                        <h1 class="display-4 mb-0">@product.AverageRating.ToString("N1")</h1>
+                        <div class="text-warning mb-2">
+                            @Html.Raw(product.StarRatingDisplay)
+                        </div>
+                        <small class="text-muted">@product.ReviewCount review(s)</small>
+                    </div>
+                    <div class="col-md-8">
+                        @for (int i = 5; i >= 1; i--)
+                        {
+                            var count = Model.Count(r => r.Rating == i);
+                            var percentage = Model.Any() ? (count * 100.0 / Model.Count) : 0;
+                            <div class="d-flex align-items-center mb-1">
+                                <span class="me-2">@i <i class="bi bi-star-fill text-warning"></i></span>
+                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" style="width: @percentage%"></div>
+                                </div>
+                                <small class="text-muted">@count</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Write Review Button -->
+        @if (canReview)
+        {
+            <div class="mb-4">
+                <a href="@Url.Action("Create", new { productId = product.ProductID })" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Write a Review
+                </a>
+            </div>
+        }
+        else if (Context.Session.GetString("UserID") == null)
+        {
+            <div class="alert alert-info mb-4">
+                <i class="bi bi-info-circle"></i>
+                Please <a href="@Url.Action("Login", "Account")">log in</a> to write a review.
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning mb-4">
+                <i class="bi bi-exclamation-triangle"></i>
+                You can only review products you have purchased.
+            </div>
+        }
+
+        <!-- Reviews List -->
+        @if (Model.Any())
+        {
+            foreach (var review in Model)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="mb-1">@review.ReviewTitle</h6>
+                                <div class="text-warning mb-1">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= review.Rating)
+                                        {
+                                            <i class="bi bi-star-fill"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star"></i>
+                                        }
+                                    }
+                                </div>
+                                <small class="text-muted">
+                                    By @review.Customer.FirstName @review.Customer.LastName.Substring(0, 1).
+                                    on @review.CreatedDate.ToString("MMMM dd, yyyy")
+                                    @if (review.IsVerifiedPurchase)
+                                    {
+                                        <span class="badge bg-success ms-2">Verified Purchase</span>
+                                    }
+                                </small>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(review.ReviewText))
+                        {
+                            <p class="mb-3">@review.ReviewText</p>
+                        }
+
+                        <!-- Review Voting -->
+                        <div class="d-flex align-items-center">
+                            <small class="text-muted me-3">Was this review helpful?</small>
+                            <button class="btn btn-sm btn-outline-success me-2" onclick="voteReview(@review.ReviewID, true)">
+                                <i class="bi bi-hand-thumbs-up"></i> Yes (@review.HelpfulVotes)
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="voteReview(@review.ReviewID, false)">
+                                <i class="bi bi-hand-thumbs-down"></i> No (@review.UnhelpfulVotes)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-chat-quote display-1 text-muted"></i>
+                <h4 class="mt-3">No reviews yet</h4>
+                <p class="text-muted">Be the first to review this product!</p>
+            </div>
+        }
+    </div>
+
+    <!-- Product Info Sidebar -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                {
+                    <img src="@product.ImageUrl" alt="@product.ProductName" class="img-fluid mb-3 rounded">
+                }
+                <h5>@product.ProductName</h5>
+                <p class="text-muted mb-2">SKU: @product.SKU</p>
+                <h4 class="text-success mb-3">$@product.Price.ToString("N2")</h4>
+
+                @if (!string.IsNullOrEmpty(product.Description))
+                {
+                    <p class="small">@product.Description</p>
+                }
+
+                <a href="@Url.Action("Details", "Products", new { id = product.ProductID })" class="btn btn-primary w-100">
+                    <i class="bi bi-arrow-left"></i> Back to Product
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function voteReview(reviewId, isHelpful) {
+        $.post('@Url.Action("Vote", "Reviews")', {
+            reviewId: reviewId,
+            isHelpful: isHelpful
+        }, function(data) {
+            if (data.success) {
+                // Show success message
+                showAlert('success', data.message);
+                // Reload page to update vote counts
+                setTimeout(function() {
+                    location.reload();
+                }, 1000);
+            } else {
+                showAlert('danger', data.message);
+            }
+        });
+    }
+
+    function showAlert(type, message) {
+        var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show position-fixed" style="top: 80px; right: 20px; z-index: 9999; min-width: 300px;">' +
+            '<i class="bi bi-' + (type === 'success' ? 'check-circle' : 'exclamation-triangle') + '"></i> ' + message +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+            '</div>';
+
+        $('body').append(alertHtml);
+
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 3000);
+    }
+</script>

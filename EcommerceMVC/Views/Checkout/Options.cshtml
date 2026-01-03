@@ -1,0 +1,198 @@
+@model EcommerceMVC.Models.CheckoutOptionViewModel
+
+@{
+    ViewBag.Title = "Checkout Options";
+    var cart = ViewBag.Cart as EcommerceMVC.Models.ShoppingCart;
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-credit-card"></i> How would you like to checkout?</h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                @using (Html.BeginForm("ProcessOption", "Checkout", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                    <div class="checkout-options">
+                        <!-- Existing Account Login -->
+                        <div class="option-card mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="CheckoutType" id="loginOption" value="login" checked>
+                                <label class="form-check-label h5" for="loginOption">
+                                    <i class="bi bi-person-check text-primary"></i> I have an account
+                                </label>
+                            </div>
+                            <div class="option-content mt-3" id="loginContent">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Username</label>
+                                        @Html.TextBoxFor(m => m.LoginUsername, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.LoginUsername, "", new { @class = "text-danger small" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Password</label>
+                                        @Html.PasswordFor(m => m.LoginPassword, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.LoginPassword, "", new { @class = "text-danger small" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Create New Account -->
+                        <div class="option-card mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="CheckoutType" id="registerOption" value="register">
+                                <label class="form-check-label h5" for="registerOption">
+                                    <i class="bi bi-person-plus text-success"></i> Create new account
+                                </label>
+                            </div>
+                            <div class="option-content mt-3" id="registerContent" style="display: none;">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Username</label>
+                                        @Html.TextBoxFor(m => m.RegisterUsername, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.RegisterUsername, "", new { @class = "text-danger small" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email</label>
+                                        @Html.TextBoxFor(m => m.RegisterEmail, new { @class = "form-control", type = "email" })
+                                        @Html.ValidationMessageFor(m => m.RegisterEmail, "", new { @class = "text-danger small" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">First Name</label>
+                                        @Html.TextBoxFor(m => m.RegisterFirstName, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.RegisterFirstName, "", new { @class = "text-danger small" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Last Name</label>
+                                        @Html.TextBoxFor(m => m.RegisterLastName, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.RegisterLastName, "", new { @class = "text-danger small" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Password</label>
+                                        @Html.PasswordFor(m => m.RegisterPassword, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.RegisterPassword, "", new { @class = "text-danger small" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Confirm Password</label>
+                                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger small" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guest Checkout -->
+                        <div class="option-card mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="CheckoutType" id="guestOption" value="guest">
+                                <label class="form-check-label h5" for="guestOption">
+                                    <i class="bi bi-person text-secondary"></i> Continue as guest
+                                </label>
+                            </div>
+                            <div class="option-content mt-3" id="guestContent" style="display: none;">
+                                <p class="text-muted">
+                                    <i class="bi bi-info-circle"></i> 
+                                    You can checkout without creating an account. You'll receive order confirmation via email.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-arrow-right"></i> Continue to Checkout
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Order Summary</h5>
+            </div>
+            <div class="card-body">
+                @if (cart != null && cart.Items.Any())
+                {
+                    foreach (var item in cart.Items)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong>@item.ProductName</strong>
+                                <br />
+                                <small class="text-muted">Qty: @item.Quantity × $@item.Price.ToString("N2")</small>
+                            </div>
+                            <div class="text-end">
+                                <strong>$@item.Subtotal.ToString("N2")</strong>
+                            </div>
+                        </div>
+                    }
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <strong>Total: </strong>
+                        <strong class="text-success">$@cart.GetTotal().ToString("N2")</strong>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">Your cart is empty</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .option-card {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .option-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+    
+    .form-check-input:checked ~ .form-check-label {
+        color: #667eea;
+        font-weight: 600;
+    }
+    
+    .option-content {
+        margin-left: 25px;
+        padding-left: 15px;
+        border-left: 3px solid #e9ecef;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Handle radio button changes
+        $('input[name="CheckoutType"]').change(function() {
+            // Hide all content areas
+            $('.option-content').hide();
+            
+            // Show the selected content area
+            var selectedType = $(this).val();
+            $('#' + selectedType + 'Content').show();
+            
+            // Update border colors
+            $('.option-card').removeClass('border-primary').addClass('border-secondary');
+            $(this).closest('.option-card').removeClass('border-secondary').addClass('border-primary');
+        });
+        
+        // Initialize with login option selected
+        $('#loginOption').trigger('change');
+    });
+</script>

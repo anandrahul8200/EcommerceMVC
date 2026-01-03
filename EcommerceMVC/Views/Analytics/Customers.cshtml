@@ -1,0 +1,137 @@
+@model EcommerceMVC.Models.CustomerAnalyticsViewModel
+@{
+    ViewBag.Title = "Customer Analytics";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Customer Analytics</h2>
+            <p><a href="@Url.Action("Index")" class="btn btn-default">← Back to Dashboard</a></p>
+            <hr />
+        </div>
+    </div>
+
+    <!-- Top Customers -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4>Top Customers by Revenue</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.TopCustomers.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Email</th>
+                                    <th>Orders</th>
+                                    <th>Total Spent</th>
+                                    <th>Last Order</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var customer in Model.TopCustomers)
+                                {
+                                    <tr>
+                                        <td>@customer.CustomerName</td>
+                                        <td>@customer.Email</td>
+                                        <td>@customer.TotalOrders</td>
+                                        <td>$@customer.TotalSpent.ToString("N2")</td>
+                                        <td>@customer.LastOrderDate.ToString("MMM dd, yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No customer data available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4>Customer Growth</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.CustomerGrowth.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>New Customers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var growth in Model.CustomerGrowth.OrderByDescending(g => g.Month).Take(12))
+                                {
+                                    <tr>
+                                        <td>@growth.Month.ToString("MMM yyyy")</td>
+                                        <td>@growth.NewCustomers</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No growth data available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Customers -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4>New Customers (Last 30 Days)</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.NewCustomers.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Registration Date</th>
+                                    <th>Customer Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var customer in Model.NewCustomers)
+                                {
+                                    <tr>
+                                        <td>@customer.FullName</td>
+                                        <td>@customer.Email</td>
+                                        <td>@customer.Phone</td>
+                                        <td>@customer.CreatedDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <span class="label @(customer.CustomerType == "Premium" ? "label-warning" : "label-default")">
+                                                @customer.CustomerType
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No new customers in the last 30 days.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,203 @@
+@model EcommerceMVC.Models.SalesAnalyticsViewModel
+@{
+    ViewBag.Title = "Sales Analytics";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Sales Analytics</h2>
+            <p><a href="@Url.Action("Index")" class="btn btn-default">← Back to Dashboard</a></p>
+            <hr />
+        </div>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Filter by Date Range</h4>
+                </div>
+                <div class="panel-body">
+                    <form method="get" class="form-inline">
+                        <div class="form-group">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" id="startDate" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" id="endDate" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="form-control" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Report</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4>Total Sales</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>$@Model.TotalSales.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4>Total Orders</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>@Model.TotalOrders</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4>Average Order</h4>
+                </div>
+                <div class="panel-body">
+                    <h3>$@Model.AverageOrderValue.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Period</h4>
+                </div>
+                <div class="panel-body">
+                    <p>@Model.StartDate.ToString("MMM dd") - @Model.EndDate.ToString("MMM dd, yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Top Products by Revenue</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.TopProducts.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Qty Sold</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model.TopProducts)
+                                {
+                                    <tr>
+                                        <td>@product.ProductName</td>
+                                        <td>@product.QuantitySold</td>
+                                        <td>$@product.Revenue.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No sales data available for this period.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Daily Sales Trend</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.DailySales.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Orders</th>
+                                    <th>Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var day in Model.DailySales.OrderByDescending(d => d.Date).Take(10))
+                                {
+                                    <tr>
+                                        <td>@day.Date.ToString("MMM dd")</td>
+                                        <td>@day.OrderCount</td>
+                                        <td>$@day.Sales.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No daily sales data available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Recent Orders</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.Orders.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.Orders.Take(20))
+                                {
+                                    <tr>
+                                        <td>@order.OrderNumber</td>
+                                        <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                        <td>@order.Customer.FullName</td>
+                                        <td>
+                                            <span class="label @(order.OrderStatus == "Completed" ? "label-success" : order.OrderStatus == "Processing" ? "label-warning" : "label-default")">
+                                                @order.OrderStatus
+                                            </span>
+                                        </td>
+                                        <td>$@order.TotalAmount.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No orders found for this period.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

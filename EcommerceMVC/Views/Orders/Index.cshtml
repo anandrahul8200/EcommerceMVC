@@ -1,0 +1,116 @@
+@model IEnumerable<EcommerceMVC.Models.Order>
+
+@{
+    ViewBag.Title = "Orders";
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-cart-check-fill"></i> Orders</h2>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Order Status</th>
+                        <th>Payment</th>
+                        <th>Total</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="order-icon me-2">
+                                        <i class="bi bi-receipt"></i>
+                                    </div>
+                                    <strong>@item.OrderNumber</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <i class="bi bi-person-circle text-muted"></i> @item.Customer.FullName
+                            </td>
+                            <td>
+                                <i class="bi bi-calendar3 text-muted"></i> @item.OrderDate.ToString("MMM dd, yyyy")
+                                <br />
+                                <small class="text-muted">@item.OrderDate.ToString("hh:mm tt")</small>
+                            </td>
+                            <td>
+                                @if (item.OrderStatus == "Delivered")
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> @item.OrderStatus</span>
+                                }
+                                else if (item.OrderStatus == "Shipped")
+                                {
+                                    <span class="badge bg-info"><i class="bi bi-truck"></i> @item.OrderStatus</span>
+                                }
+                                else if (item.OrderStatus == "Processing")
+                                {
+                                    <span class="badge bg-warning"><i class="bi bi-hourglass-split"></i> @item.OrderStatus</span>
+                                }
+                                else if (item.OrderStatus == "Cancelled")
+                                {
+                                    <span class="badge bg-danger"><i class="bi bi-x-circle"></i> @item.OrderStatus</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@item.OrderStatus</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.PaymentStatus == "Paid")
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-credit-card"></i> Paid</span>
+                                }
+                                else if (item.PaymentStatus == "Pending")
+                                {
+                                    <span class="badge bg-warning"><i class="bi bi-clock"></i> Pending</span>
+                                }
+                                else if (item.PaymentStatus == "Failed")
+                                {
+                                    <span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> Failed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">@item.PaymentStatus</span>
+                                }
+                            </td>
+                            <td>
+                                <strong class="text-success" style="font-size: 1.1rem;">$@item.TotalAmount.ToString("N2")</strong>
+                            </td>
+                            <td>
+                                <div class="action-buttons justify-content-center">
+                                    <a href="@Url.Action("Details", new { id = item.OrderID })" class="btn btn-sm btn-info" title="View Details">
+                                        <i class="bi bi-eye"></i> Details
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .order-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+</style>
